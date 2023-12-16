@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/nullstyle.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+		<title>task3</title>
+		<style>
+			.selected-word {
+				outline: 1px solid blue;
+			}
+		</style>
+	</head>
+	<body>
+		<main class="page">
+			<div class="page__container">
+				<div class="task">
+					<div class="task__condition text"></div>
+				</div>
+				<div id="app">
+					<div class="block">
+						<div>
+							<h4>Відділення</h4>
+							<ul class="department__list">
+								<li v-for="department, indx in departments" @click="selectDepartment(department, $event)" :key="indx">{{department}}</li>
+							</ul>
+						</div>
+						<div>
+							<h4>Товари</h4>
+							<ul class="products__list">
+								<li v-for="product,indx in products" :key="indx" @click="selectProduct(product, indx,$event)">{{product}}</li>
+							</ul>
+						</div>
+					</div>
+					<button @click="addToDistributedProductsInShops">Додати</button>
+					<div>
+						<ul>
+							<li v-for="distributedProductsInShop in distributedProductsInShops">
+								{{distributedProductsInShop.department}}
+								<ul class="sublist">
+									<li v-for="product in distributedProductsInShop.products">{{product}}</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<script>
+				const { createApp } = Vue
+
+				const departments = ["Головне", "Оптовий", "Магазин 1", "Магазин 2", "Магазие3"]
+				const products = ["Телефони", "Телевізори", "Мікрохвильові печі", "Пральеі машини", "фени", "чайники"]
+				const app = createApp({
+					data() {
+						return {
+							selectedDepartment: null,
+							selectedProducts: [],
+							distributedProductsInShops: [],
+						}
+					},
+					computed: {
+						departments() {
+							if (departments) return departments
+						},
+						products() {
+							if (products) return products
+						},
+					},
+					methods: {
+						selectDepartment(department, event) {
+							this.selectedDepartment = department
+							let el = document.querySelector(".department__list li.selected-word")
+							console.log(el)
+							if (el) el.classList.remove("selected-word")
+							event.target.classList.add("selected-word")
+						},
+						selectProduct(product, indx, event) {
+							event.target.classList.toggle("selected-word")
+							const indexToRemove = this.selectedProducts.indexOf(product)
+							if (indexToRemove !== -1) this.selectedProducts.splice(indexToRemove, 1)
+							else this.selectedProducts.push(product)
+						},
+						addToDistributedProductsInShops() {
+							if (this.selectedDepartment && this.selectedProducts.length > 0) {
+								//первіряю якщо такий магазин вже є то щоб не створювались 2 одинакові магазини
+								for (let i = 0; i < this.distributedProductsInShops.length; i++) {
+									if (this.distributedProductsInShops[i].department === this.selectedDepartment) {
+										this.distributedProductsInShops[i].products = JSON.parse(JSON.stringify(this.selectedProducts))
+										return
+									}
+								}
+								this.distributedProductsInShops.push({
+									department: this.selectedDepartment,
+									products: JSON.parse(JSON.stringify(this.selectedProducts)),
+								})
+							}
+						},
+					},
+				})
+				app.mount("#app")
+			</script>
+		</main>
+	</body>
+</html>

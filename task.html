@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="css/nullstyle.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+		<title>task0</title>
+	</head>
+	<style></style>
+	<body>
+		<main class="page">
+			<div class="page__container">
+				<div class="task">
+					<div class="task__condition text">
+						Задача 6. Пари для танців. Поступово вибираємо хлопця, дівчину і додаємо у обрані пари. Пару можна видалити. Поки не вибрано хлопця і дівчину кнопка «Додати»
+						заблокована. Якщо не вистачає хлопців або дівчат вибір також блокується.
+					</div>
+				</div>
+				<div id="app">
+					<div class="couples">
+						<div class="couples__body">
+							<div class="couples__block">
+								<div class="couples__title">Хлопці</div>
+								<div class="couples__list">
+									<ul>
+										<li class="person" v-for="(boyData,indx) in boys" @click="selectBoy(indx)" :key="boyData.id">{{boyData.name}}</li>
+									</ul>
+								</div>
+							</div>
+							<div class="couples__block">
+								<div class="couples__title">Дівчата</div>
+								<div class="couples__list">
+									<ul>
+										<li class="person" v-for="(girlData,indx) in girls" @click="selectGirl(indx)" :key="girlData.id">{{girlData.name}}</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<button class="couples__add-btn" @click="addNewCouple">Додати</button>
+						<div class="couples__selected">
+							<ul>
+								<li v-for="(coupleData ,indx) in selectedCouples" :key="coupleData.id">
+									{{coupleData.boy.name}} - {{coupleData.girl.name}} <button @click="deleteCouple(indx)">Видалити пару</button>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<script>
+				const { createApp } = Vue
+				const app = createApp({
+					data() {
+						return {
+							boys: [
+								{ name: "John", id: 533 },
+								{ name: "Alice", id: 356 },
+								{ name: "Bob", id: 674 },
+								{ name: "Eva", id: 735 },
+								{ name: "David", id: 626 },
+							],
+							girls: [
+								{ name: "Emma", id: 96 },
+								{ name: "Olivia", id: 382 },
+								{ name: "Sophia", id: 863 },
+								{ name: "Isabella", id: 725 },
+							],
+							selectedCouples: [],
+							selectedBoyIndx: null,
+							selectedGirlIndx: null,
+						}
+					},
+					computed: {},
+					methods: {
+						selectBoy(indx) {
+							this.selectedBoyIndx = indx
+						},
+						selectGirl(indx) {
+							this.selectedGirlIndx = indx
+						},
+						addNewCouple() {
+							if (this.selectedBoyIndx !== null && this.selectedGirlIndx !== null) {
+								this.selectedCouples.push({
+									boy: this.boys[this.selectedBoyIndx],
+									girl: this.girls[this.selectedGirlIndx],
+									id: new Date().getTime(),
+								})
+								this.boys.splice(this.selectedBoyIndx, 1)
+								this.girls.splice(this.selectedGirlIndx, 1)
+							}
+							this.selectedBoyIndx = null
+							this.selectedGirlIndx = null
+						},
+						deleteCouple(indx) {
+							this.boys.push(this.selectedCouples[indx].boy)
+							this.girls.push(this.selectedCouples[indx].girl)
+							this.selectedCouples.splice(indx, 1)
+						},
+					},
+				})
+				app.mount("#app")
+			</script>
+		</main>
+	</body>
+</html>
